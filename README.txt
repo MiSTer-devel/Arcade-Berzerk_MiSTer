@@ -16,7 +16,6 @@
 --
 --   F2          : Coin + Start 2 players
 --   F1          : Coin + Start 1 player
---   F5          : Skip to next level
 --   UP,DOWN,LEFT,RIGHT arrows : Movements
 --   Space,Ctrl  : Fire
 --
