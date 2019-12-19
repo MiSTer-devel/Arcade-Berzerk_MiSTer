@@ -28,7 +28,7 @@ module emu
 	input         RESET,
 
 	//Must be passed to hps_io module
-	inout  [44:0] HPS_BUS,
+	inout  [45:0] HPS_BUS,
 
 	//Base video clock. Usually equals to CLK_SYS.
 	output        VGA_CLK,
@@ -43,6 +43,7 @@ module emu
 	output        VGA_HS,
 	output        VGA_VS,
 	output        VGA_DE,    // = ~(VBlank | HBlank)
+	output        VGA_F1,
 
 	//Base video clock. Usually equals to CLK_SYS.
 	output        HDMI_CLK,
@@ -73,9 +74,21 @@ module emu
 
 	output [15:0] AUDIO_L,
 	output [15:0] AUDIO_R,
-	output        AUDIO_S    // 1 - signed audio samples, 0 - unsigned
+	output        AUDIO_S,   // 1 - signed audio samples, 0 - unsigned
+	
+	// Open-drain User port.
+	// 0 - D+/RX
+	// 1 - D-/TX
+	// 2..6 - USR2..USR6
+	// Set USER_OUT to 1 to read from USER_IN.
+	input   [6:0] USER_IN,
+	output  [6:0] USER_OUT
+	
+	
 );
 
+assign VGA_F1    = 0;
+assign USER_OUT  = '1;
 assign LED_USER  = ioctl_download;
 assign LED_DISK  = 0;
 assign LED_POWER = 0;
@@ -86,8 +99,6 @@ assign HDMI_ARY = status[1] ? 8'd9  : 8'd3;
 `include "build_id.v" 
 localparam CONF_STR = {
 	"A.BERZERK;;",
-	"F,rom;", // allow loading of alternate ROMs
-	"-;",
 	"O1,Aspect Ratio,Original,Wide;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"-;",
@@ -142,6 +153,9 @@ wire [10:0] ps2_key;
 wire [15:0] joystick_0,joystick_1;
 wire [15:0] joy = joystick_0 | joystick_1;
 
+wire [21:0] gamma_bus;
+
+
 hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 (
 	.clk_sys(clk_sys),
@@ -152,6 +166,7 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 	.buttons(buttons),
 	.status(status),
 	.forced_scandoubler(forced_scandoubler),
+	.gamma_bus(gamma_bus),
 
 	.ioctl_download(ioctl_download),
 	.ioctl_wr(ioctl_wr),
@@ -272,6 +287,13 @@ wire [2:0] video_b = status[16] ? d_video_b : b_video_b;
 
 
 // 318 or 320?
+reg ce_pix;
+always @(posedge clk_40) begin
+        reg [1:0] div;
+
+        div <= div + 1'd1;
+        ce_pix <= !div;
+end
 
 //arcade_fx #(256,9) arcade_video
 arcade_fx #(320,9) arcade_video
@@ -279,9 +301,9 @@ arcade_fx #(320,9) arcade_video
         .*,
 
         .clk_video(clk_40),
-        .ce_pix(ce_vid),
-		  //.RGB_in({r,r,r,g,g,g,b,b,b}),
-		  .RGB_in({video_r,video_g,video_b}),
+        //.ce_pix(ce_vid),
+	//.RGB_in({r,r,r,g,g,g,b,b,b}),
+	.RGB_in({video_r,video_g,video_b}),
 
         .HBlank(hblank),
         .VBlank(vblank),
@@ -313,7 +335,7 @@ berzerk berzerk(
 	.video_g(g),
 	.video_b(b),
 	.video_hi(video_hi),
-   .video_clk(),
+	.video_clk(),
 	.video_csync(),
 	.video_hs(hs),
 	.video_vs(vs),
@@ -334,8 +356,8 @@ berzerk berzerk(
 	.down2(m_down_2),
 	.up2(m_up_2),
 	.fire2(m_fire_2),
-   .dip_f2(m_dip_f2),
-   .dip_f3(m_dip_f3),
+	.dip_f2(m_dip_f2),
+	.dip_f3(m_dip_f3),
 	
 	.ledr(),
 	.dbg_cpu_di(),
