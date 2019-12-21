@@ -246,11 +246,10 @@ wire m_coin   = m_start1 | m_start2;
 
 
 wire hblank, vblank;
-wire ce_vid = clk_10;
 wire hs, vs;
-wire  r;
-wire  g;
-wire  b;
+wire r;
+wire g;
+wire b;
 
 /*
 -- adapt video to 4bits/color only
@@ -285,32 +284,27 @@ wire [2:0] video_r = status[16] ? d_video_r : b_video_r;
 wire [2:0] video_g = status[16] ? d_video_g : b_video_g;
 wire [2:0] video_b = status[16] ? d_video_b : b_video_b;
 
-
-// 318 or 320?
 reg ce_pix;
 always @(posedge clk_40) begin
-        reg [1:0] div;
+	reg [2:0] div;
 
-        div <= div + 1'd1;
-        ce_pix <= !div;
+	div <= div + 1'd1;
+	ce_pix <= !div;
 end
 
-//arcade_fx #(256,9) arcade_video
-arcade_fx #(320,9) arcade_video
+arcade_fx #(260,9) arcade_video
 (
-        .*,
+	.*,
 
-        .clk_video(clk_40),
-        //.ce_pix(ce_vid),
-	//.RGB_in({r,r,r,g,g,g,b,b,b}),
+	.clk_video(clk_40),
 	.RGB_in({video_r,video_g,video_b}),
 
-        .HBlank(hblank),
-        .VBlank(vblank),
-        .HSync(hs),
-        .VSync(vs),
+	.HBlank(hblank),
+	.VBlank(vblank),
+	.HSync(hs),
+	.VSync(vs),
 
-        .fx(status[5:3])
+	.fx(status[5:3])
 );
 
 
