@@ -139,32 +139,24 @@ de10_lite/berzerk_de10_lite.sdc   timequest constraints
 Required ROMs (Not included)
 -----------------------------
 
-You need the following 8 ROMs from berzerk.zip 
+                                *** Attention ***
 
-berzerk_rc31_1c.rom0.1c CRC(ca566dbc) SHA1(fae2647f12f1cd82826db61b53b116a5e0c9f995)
-berzerk_rc31_1d.rom1.1d CRC(7ba69fde) SHA1(69af170c4a39a3494dcd180737e5c87b455f9203)
-berzerk_rc31_3d.rom2.3d CRC(a1d5248b) SHA1(a0b7842f6a5f86c16d80d78e7012c78b3ea11d1d)
-berzerk_rc31_5d.rom3.5d CRC(fcaefa95) SHA1(07f849aa39f1e3db938187ffde4a46a588156ddc)
-berzerk_rc31_6d.rom4.6d CRC(1e35b9a0) SHA1(5a5e549ec0e4803ab2d1eac6b3e7171aedf28244)
-berzerk_rc31_5c.rom5.5c CRC(c8c665e5) SHA1(e9eca4b119549e0061384abf52327c14b0d56624)
-berzerk_r_vo_1c.1c      CRC(2cfe825d) SHA1(f12fed8712f20fa8213f606c4049a8144bfea42e)
-berzerk_r_vo_2c.2c      CRC(d2b6324e) SHA1(20a6611ad6ec19409ac138bdae7bdfaeab6c47cf)
+ROMs are not included. In order to use this arcade, you need to provide the
+correct ROMs.
 
-------
-Tools 
-------
-You need to build vhdl ROM image files from the binary file :
- - Unzip the roms file in the tools/berzerk_unzip directory
- - Double click (execute) the script tools/berzerk_unzip/make_berzerk_proms.bat to get the following files
+To simplify the process .mra files are provided in the releases folder, that
+specifies the required ROMs with checksums. The ROMs .zip filename refers to the
+corresponding file of the M.A.M.E. project.
 
-berzerk_program1.vhd
-berzerk_program2.vhd
+Please refer to https://github.com/MiSTer-devel/Main_MiSTer/wiki/Arcade-Roms for
+information on how to setup and use the environment.
 
-*DO NOT REDISTRIBUTE THESE FILES*
+Quickreference for folders and file placement:
 
-The script make_berzerk_proms uses make_vhdl_prom and and duplicate_byte executables delivered both in linux and windows version. The script itself is delivered only in windows version (.bat) but should be easily ported to linux.
-
-Source code of make_vhdl_prom.c and and duplicate_byte.c is also delivered.
+/_Arcade/<game name>.mra
+/_Arcade/cores/<game rbf>.rbf
+/_Arcade/mame/<mame rom>.zip
+/_Arcade/hbmame/<hbmame rom>.zip
 
 ---------------------------------
 Compiling for de10_lite
