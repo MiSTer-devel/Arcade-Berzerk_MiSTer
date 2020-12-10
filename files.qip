@@ -1,4 +1,4 @@
-set_global_assignment -name VHDL_FILE dpram.vhd
+set_global_assignment -name VHDL_FILE rtl/dpram.vhd
 set_global_assignment -name VHDL_FILE rtl/T80/T80se.vhd
 set_global_assignment -name VHDL_FILE rtl/T80/T80_Reg.vhd
 set_global_assignment -name VHDL_FILE rtl/T80/T80_Pack.vhd
