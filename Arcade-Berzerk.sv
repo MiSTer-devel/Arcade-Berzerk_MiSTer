@@ -38,45 +38,48 @@ module emu
 	output        CE_PIXEL,
 
 	//Video aspect ratio for HDMI. Most retro systems have ratio 4:3.
-        output [11:0] VIDEO_ARX,
-        output [11:0] VIDEO_ARY,
+   output [11:0] VIDEO_ARX,
+   output [11:0] VIDEO_ARY,
 
-	output  [7:0] VGA_R,
+   output  [7:0] VGA_R,
 	output  [7:0] VGA_G,
 	output  [7:0] VGA_B,
 	output        VGA_HS,
 	output        VGA_VS,
 	output        VGA_DE,    // = ~(VBlank | HBlank)
 	output        VGA_F1,
-        output [1:0]  VGA_SL,
-        output        VGA_SCALER, // Force VGA scaler
+   output [1:0]  VGA_SL,
+   output        VGA_SCALER, // Force VGA scaler
 
-        // Use framebuffer from DDRAM (USE_FB=1 in qsf)
-        // FB_FORMAT:
-        //    [2:0] : 011=8bpp(palette) 100=16bpp 101=24bpp 110=32bpp
-        //    [3]   : 0=16bits 565 1=16bits 1555
-        //    [4]   : 0=RGB  1=BGR (for 16/24/32 modes)
-        //
-        // FB_STRIDE either 0 (rounded to 256 bytes) or multiple of 16 bytes.
-        output        FB_EN,
-        output  [4:0] FB_FORMAT,
-        output [11:0] FB_WIDTH,
-        output [11:0] FB_HEIGHT,
-        output [31:0] FB_BASE,
-        output [13:0] FB_STRIDE,
-        input         FB_VBL,
-        input         FB_LL,
-        output        FB_FORCE_BLANK,
+	`ifdef USE_FB
 
-        // Palette control for 8bit modes.
-        // Ignored for other video modes.
-        output        FB_PAL_CLK,
-        output  [7:0] FB_PAL_ADDR,
-        output [23:0] FB_PAL_DOUT,
-        input  [23:0] FB_PAL_DIN,
-        output        FB_PAL_WR,
+   // Use framebuffer from DDRAM (USE_FB=1 in qsf)
+   // FB_FORMAT:
+	//    [2:0] : 011=8bpp(palette) 100=16bpp 101=24bpp 110=32bpp
+	//    [3]   : 0=16bits 565 1=16bits 1555
+	//    [4]   : 0=RGB  1=BGR (for 16/24/32 modes)
+	//
+	// FB_STRIDE either 0 (rounded to 256 bytes) or multiple of 16 bytes.
+	output        FB_EN,
+	output  [4:0] FB_FORMAT,
+	output [11:0] FB_WIDTH,
+	output [11:0] FB_HEIGHT,
+	output [31:0] FB_BASE,
+	output [13:0] FB_STRIDE,
+	input         FB_VBL,
+	input         FB_LL,
+	output        FB_FORCE_BLANK,
 
-        output        LED_USER,  // 1 - ON, 0 - OFF.
+	// Palette control for 8bit modes.
+	// Ignored for other video modes.
+	output        FB_PAL_CLK,
+	output  [7:0] FB_PAL_ADDR,
+	output [23:0] FB_PAL_DOUT,
+	input  [23:0] FB_PAL_DIN,
+	output        FB_PAL_WR,
+	`endif
+	
+   output        LED_USER,  // 1 - ON, 0 - OFF.
 
 	// b[1]: 0 - LED status is system status OR'd with b[0]
 	//       1 - LED status is controled solely by b[0]
@@ -84,24 +87,26 @@ module emu
 	output  [1:0] LED_POWER,
 	output  [1:0] LED_DISK,
 
-        input         CLK_AUDIO, // 24.576 MHz
+   input         CLK_AUDIO, // 24.576 MHz
 	output [15:0] AUDIO_L,
 	output [15:0] AUDIO_R,
 	output        AUDIO_S,   // 1 - signed audio samples, 0 - unsigned
 
-        //High latency DDR3 RAM interface
-        //Use for non-critical time purposes
-        output        DDRAM_CLK,
-        input         DDRAM_BUSY,
-        output  [7:0] DDRAM_BURSTCNT,
-        output [28:0] DDRAM_ADDR,
-        input  [63:0] DDRAM_DOUT,
-        input         DDRAM_DOUT_READY,
-        output        DDRAM_RD,
-        output [63:0] DDRAM_DIN,
-        output  [7:0] DDRAM_BE,
-        output        DDRAM_WE,
-
+	`ifdef USE_DDRAM
+	  //High latency DDR3 RAM interface
+	  //Use for non-critical time purposes
+	  output        DDRAM_CLK,
+	  input         DDRAM_BUSY,
+	  output  [7:0] DDRAM_BURSTCNT,
+	  output [28:0] DDRAM_ADDR,
+	  input  [63:0] DDRAM_DOUT,
+	  input         DDRAM_DOUT_READY,
+	  output        DDRAM_RD,
+	  output [63:0] DDRAM_DIN,
+	  output  [7:0] DDRAM_BE,
+	  output        DDRAM_WE,
+	`endif
+	
 	// Open-drain User port.
 	// 0 - D+/RX
 	// 1 - D-/TX
@@ -119,7 +124,7 @@ assign USER_OUT  = '1;
 assign LED_USER  = ioctl_download;
 assign LED_DISK  = 0;
 assign LED_POWER = 0;
-assign {FB_PAL_CLK, FB_FORCE_BLANK, FB_PAL_ADDR, FB_PAL_DOUT, FB_PAL_WR} = '0;
+//assign {FB_PAL_CLK, FB_FORCE_BLANK, FB_PAL_ADDR, FB_PAL_DOUT, FB_PAL_WR} = '0;
 assign VIDEO_ARX = status[1] ? 8'd16 : 8'd4;
 assign VIDEO_ARY = status[1] ? 8'd9  : 8'd3;
 
@@ -270,7 +275,7 @@ wire m_right_2  = btn_right_2 | joy[0];
 wire m_fire_2   = btn_fire_2  | joy[4];
 
 wire m_start1 = btn_start_1 | joy[5];
-wire m_start2 = btn_start_1 | joy[6];
+wire m_start2 = btn_start_2 | joy[6];
 wire m_coin   = btn_coin_1  | joy[7];
 
 
@@ -321,7 +326,7 @@ always @(posedge clk_40) begin
 	ce_pix <= !div;
 end
 
-wire no_rotate = status[2] | direct_video;
+//wire no_rotate = status[2] | direct_video;
 
 arcade_video #(260,9) arcade_video
 (
@@ -385,7 +390,7 @@ berzerk berzerk(
 	.dip_f3(m_dip_f3),
 	
 	.ledr(),
-	.dbg_cpu_di(),
+	//.dbg_cpu_di(),
 	.dbg_cpu_addr(),
 	.dbg_cpu_addr_latch()
 );

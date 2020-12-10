@@ -165,7 +165,7 @@ end process;
 -- no IRQ
 -- no gates input
 
-counters : process(clock, reset)
+counters : process(clock, reset,ptm6840_max1,ptm6840_max2,ptm6840_max3)
 begin
 	if reset = '1' then
 		ptm6840_cnt1 <= ptm6840_max1;

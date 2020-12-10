@@ -114,7 +114,7 @@ port(
 
   sw          : in std_logic_vector(9 downto 0);
   ledr        : out std_logic_vector(9 downto 0) := "0000000000";
-  dbg_cpu_di   : out std_logic_vector( 7 downto 0);
+--  dbg_cpu_di   : out std_logic_vector( 7 downto 0);
   dbg_cpu_addr : out std_logic_vector(15 downto 0);
   dbg_cpu_addr_latch : out std_logic_vector(15 downto 0)
     
@@ -357,6 +357,7 @@ begin
 	if rising_edge(clock_10) then
 
 		vcnt_r <= vcnt;
+		hcnt_r <= hcnt;
 		vcnt_int_r <= vcnt_int;
 
 		if nmi_enable = '1' then
