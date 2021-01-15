@@ -181,9 +181,13 @@ wire        forced_scandoubler;
 wire        direct_video;
 
 wire        ioctl_download;
+wire        ioctl_upload;
 wire        ioctl_wr;
 wire [24:0] ioctl_addr;
 wire  [7:0] ioctl_dout;
+wire  [7:0] ioctl_din;
+wire  [7:0] ioctl_index;
+wire        ioctl_wait;
 
 wire [10:0] ps2_key;
 
@@ -208,12 +212,16 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 	.direct_video(direct_video),
 
 	.ioctl_download(ioctl_download),
+	.ioctl_upload(ioctl_upload),
 	.ioctl_wr(ioctl_wr),
 	.ioctl_addr(ioctl_addr),
 	.ioctl_dout(ioctl_dout),
+	.ioctl_din(ioctl_din),
+	.ioctl_index(ioctl_index),
+	.ioctl_wait(ioctl_wait),
 
 	.joystick_0(joystick_0),
-	.joystick_1(joystick_1),
+	.joystick_1(joystick_1)
 );
 
 
@@ -304,17 +312,20 @@ assign AUDIO_L =  audio;
 assign AUDIO_R = AUDIO_L;
 assign AUDIO_S = 0;
 
+wire rom_download = ioctl_download && !ioctl_index;
+wire [15:0] dn_addr = ioctl_addr[15:0];
  
 berzerk berzerk(
 	.clock_10(clk_10),
 	.clk_sys(clk_sys),
 	.reset(RESET | status[0] | buttons[1] | ioctl_download),
 
-	.dn_addr(ioctl_addr[15:0]),
+	.dn_addr(dn_addr),
 	.dn_data(ioctl_dout),
-	.dn_wr(ioctl_wr),
-
-	
+	.dn_wr(ioctl_wr & rom_download),
+	.dn_nvram_wr(ioctl_wr & (ioctl_index=='d4)), 
+	.dn_din(ioctl_din),
+	.dn_nvram(ioctl_index=='d4),
 
 	.video_r(r),
 	.video_g(g),

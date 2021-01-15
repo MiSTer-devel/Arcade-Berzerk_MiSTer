@@ -22,4 +22,5 @@
 		<part crc="2cfe825d" name="berzerk_r_vo_1c.1c"/>
 		<part crc="d2b6324e" name="berzerk_r_vo_2c.2c"/>
 	</rom>
+	<nvram index="4" size="1024"/>
 </misterromdescription>

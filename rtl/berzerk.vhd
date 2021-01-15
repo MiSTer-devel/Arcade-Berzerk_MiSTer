@@ -107,10 +107,13 @@ port(
   dip_f2			: in std_logic_vector(7 downto 0);
   dip_f3			: in std_logic_vector(7 downto 0);
   
-  -- signals that carry the ROM data from the MiSTer disk
+  -- signals that carry the ROM data from the MiSTer disk 
   dn_addr        : in  std_logic_vector(15 downto 0);
   dn_data        : in  std_logic_vector(7 downto 0);
   dn_wr          : in  std_logic;
+  dn_din         : out std_logic_vector(7 downto 0);
+  dn_nvram       : in  std_logic;
+  dn_nvram_wr    : in  std_logic;
 
   sw          : in std_logic_vector(9 downto 0);
   ledr        : out std_logic_vector(9 downto 0) := "0000000000";
@@ -543,9 +546,6 @@ port map (
   vcnt_o    => vcnt
 );
 
-
-
-
 --video_gen :  video_gen_verilog
 --port map (
 --  pclk     => clock_10,
@@ -644,14 +644,20 @@ port map
 
 
 -- working ram - 0800-0bff
-mosram : entity work.gen_ram
-generic map( dWidth => 8, aWidth => 10)
+mosram : entity work.dpram
+generic map(10,8)
 port map(
- clk  => clock_10n,
- we   => mosram_we,
- addr => cpu_addr( 9 downto 0),
- d    => cpu_do,
- q    => mosram_do
+	clock_a  => clock_10n,
+	wren_a   => mosram_we,
+	address_a => cpu_addr(9 downto 0),
+	data_a    => cpu_do,
+	q_a    => mosram_do,
+ 
+	clock_b  => clk_sys,
+	wren_b   => (dn_wr or dn_nvram_wr) and dn_nvram,
+	address_b => dn_addr(9 downto 0),
+	data_b    => dn_data(7 downto 0),
+	q_b     => dn_din(7 downto 0)
 );
 
 -- video/working ram - 4000-5fff mirrored 6000-7fff
