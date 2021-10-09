@@ -75,6 +75,8 @@ port(
   clk_sys		: in std_logic;
   reset        : in std_logic;
 
+  pause        : in std_logic;
+
   video_r      : out std_logic;
   video_g      : out std_logic;
   video_b      : out std_logic;
@@ -577,7 +579,7 @@ port map(
   RESET_n => reset_n,
   CLK_n   => cpu_clock,
   CLKEN   => '1', 
-  WAIT_n  => '1',
+  WAIT_n  => not pause,
   INT_n   => cpu_int_n,
   NMI_n   => cpu_nmi_n,
   BUSRQ_n => '1',

@@ -45,7 +45,12 @@
 		<part crc="d2b6324e" name="berzerk_r_vo_2c.2c"></part>
 		</rom>
 	<rom index="2"></rom>
-	<rom index="3"></rom>
+	<rom index="3">
+		<part>
+		00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+		00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF
+		</part>
+	</rom>
 	<rom index="4"></rom>
 
 	<nvram index="4" size="1024"></nvram>
