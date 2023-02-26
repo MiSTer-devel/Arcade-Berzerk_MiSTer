@@ -114,8 +114,8 @@ begin
 				else                      csync <= hsync0; 
 				end if;
 
-				if    vcnt = (490) then vsync <= '0';
-				elsif vcnt = (498) then vsync <= '1';
+				if    vcnt = (490-4) then vsync <= '0';
+				elsif vcnt = (498-4) then vsync <= '1';
 				end if;    
 
 				if    hcnt = (448+7) then hblank <= '1'; 
