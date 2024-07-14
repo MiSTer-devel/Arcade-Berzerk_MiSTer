@@ -11,5 +11,6 @@ set_global_assignment -name VHDL_FILE rtl/berzerk_speech.vhd
 set_global_assignment -name VHDL_FILE rtl/berzerk_sound_fx.vhd
 set_global_assignment -name VHDL_FILE rtl/berzerk.vhd
 set_global_assignment -name SYSTEMVERILOG_FILE "Arcade-Berzerk.sv"
+set_global_assignment -name SDC_FILE Arcade-Berzerk.sdc
 set_global_assignment -name VERILOG_FILE rtl/pause.v
 set_global_assignment -name VERILOG_FILE rtl/nvram.v
